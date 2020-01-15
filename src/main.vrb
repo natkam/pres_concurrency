@@ -1,0 +1,13 @@
+\frametitle{Global Interpreter Lock -- continued}
+
+        Reference counting:
+        any reference to an object modifies it! (or at least its refcount)
+        \begin{verbatim}
+            > import sys
+            > a = []
+            > sys.getrefcount(a)
+            2
+            > b = a
+            > sys.getrefcount(a)
+            3
+        \end{verbatim}
