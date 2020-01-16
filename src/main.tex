@@ -10,6 +10,7 @@
 % or Goettingen or Malmoe
 \setbeamercovered{transparent}
 % or whatever (possibly just delete it)
+%\usecolortheme{seahorse}
 }
 
 
@@ -20,6 +21,7 @@
 %\usepackage{times}
 %\usepackage[T1]{fontenc}
 \usepackage{amsthm}
+\usepackage{graphicx}
 
 
 
@@ -31,13 +33,13 @@
 %\pgfdeclareimage[height=0.5cm]{company-logo}{skygate_logo.jpg}
 %\logo{\pgfuseimage{company-logo}}
 
-\AtBeginSubsection[]
-{
-\begin{frame}
-    <beamer>{Outline}
-    \tableofcontents[currentsection,currentsubsection]
-\end{frame}
-}
+%\AtBeginSubsection[]
+%{
+%\begin{frame}
+%    <beamer>{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%\end{frame}
+%}
 
 \beamerdefaultoverlayspecification{<+->}
 
@@ -54,6 +56,8 @@
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Introduction}
+
+    \subsection{Definitions}
 
 
     \begin{frame}
@@ -74,35 +78,26 @@
         \frametitle{Concurrency vs. Parallelism}
         \framesubtitle{https://wiki.haskell.org/Parallelism\_vs.\_Concurrency}
 
-        \begin{itemize}
-            \item Not all programmers agree on the meaning of the terms 'parallelism' and
-            'concurrency'. They may define them in different ways or do not distinguish them at all.
+        \textbf{Disclaimer:} Not all programmers agree on the meaning!
 
 
-
-        \end{itemize}
-
-        \begin{definition} A parallel program is one that uses a multiplicity of
+        \begin{definition} A \textbf{parallel program} is one that uses a multiplicity of
         computational hardware (e.g. multiple processor cores) in order to perform
         computation more quickly. Different parts of the computation are delegated
-        to different processors that execute at the same time (in parallel), so that
-        results may be delivered earlier than if the computation had been performed sequentially.
+        to different processors that execute at the same time (in parallel).
 
         \end{definition}
 
-        \begin{definition} In contrast, concurrency is a program-structuring technique
-        in which there are multiple threads of control. Notionally the threads of control
-        execute "at the same time"; that is, the user sees their effects interleaved.
-        Whether they actually execute at the same time or not is an implementation detail;
-        a concurrent program can execute on a single processor through interleaved execution,
-        or on multiple physical processors.
+        \begin{definition} \textbf{Concurrency} is a program-structuring technique
+        in which there are multiple threads of control. The user sees their effects interleaved.
+        Whether they actually execute at the same time or not is an implementation detail.
 
         \end{definition}
-
-
 
     \end{frame}
 
+
+    \subsection{Different Types of Concurrency -- More Details}
 
     \begin{frame}
         \frametitle{CPU-bound tasks: multiprocessing/parallel processing}
@@ -116,16 +111,24 @@
 
     \end{frame}
 
+    \begin{frame}
+        \frametitle{CPU-bound tasks -- continued}
+
+        \begin{figure}
+            \includegraphics{../figures/CPUBound.png}
+            \caption{A diagram for a CPU-intensive program. Blue boxes show time when the program is doing work.}
+        \end{figure}
+
+    \end{frame}
+
 
     \begin{frame}
         \frametitle{I/O-bound tasks: threading, asynchronicity}
 
         \begin{itemize}
-            \item Only one process
+            \item Only one process (in Python)
             \item Not \emph{really} simultaneous: but can sometimes fake it quite well
             \item Good for: sending requests (to DB, to APIs), waiting for user input, etc.
-            \item Problems:
-            % TODO
         \end{itemize}
 
     \end{frame}
@@ -140,7 +143,7 @@
             \item Pre-emptive multitasking: the system (scheduler) interrupts threads at arbitrary moments,
             switches to another thread, and later resumes the stopped tasks
             \item No task cooperation is necessary
-            \item Caveats: Race conditions! -- random bugs. Thread-safety is important!
+            \item Caveats: Race conditions! $\Rightarrow random bugs. Thread-safety is important!
         \end{itemize}
 
     \end{frame}
@@ -169,7 +172,7 @@
         \begin{itemize}
             \item \texttt{multiprocessing} -- for CPU-bound tasks
             \item \texttt{threading}  -- \dots?
-            \item \texttt{asyncio} -- from Python 3.5 on
+            \item \texttt{asyncio} -- from Python 3.4 on
         \end{itemize}
 
     \end{frame}
@@ -191,7 +194,6 @@
             \item But why?!
             \item Makes the object model implicitly safe against concurrent access
             \item Reference counting -- instead of garbage collection; (more about it in the next slide)
-            \item The GIL is always released when doing I/O
         \end{itemize}
 
     \end{frame}
@@ -232,6 +234,9 @@
     \begin{frame}
         \frametitle{Global Interpreter Lock -- continued}
 
+
+        The GIL is always released when doing I/O.
+
         \begin{quotation}
             [O]nly the thread that has acquired the GIL may operate on Python objects or
             call Python/C API functions. In order to emulate concurrency of execution,
@@ -242,11 +247,21 @@
 
     \end{frame}
 
-    %\begin{frame}
-    %    \frametitle{}
-    %
-    %\end{frame}
-    %
+    \begin{frame}
+        \frametitle{Global Interpreter Lock -- continued}
+
+        How to deal with GIL?
+        \begin{itemize}
+            \item multithreading $\rightarrow$ asyncio
+            \item multithreading $\rightarrow$ multiprocessing (+ asyncio)
+            \item CPU-intensive functions $\rightarrow$ Cython (no GIL!)
+            \item Python $\rightarrow$ a faster language\dots?
+        \end{itemize}
+
+        Pycharm: concurrency diagrams (reveals locking issues, but omits GIL)
+
+    \end{frame}
+
     %\begin{frame}
     %    \frametitle{}
     %
@@ -271,9 +286,9 @@
         \frametitle{Concurrency in Python -- bibliography \& further reading}
 
         \begin{itemize}
-            \item Jim Anderson, \emph{"Speed Up Your Python Program With Concurrency"},
+            \item<1-> Jim Anderson, \emph{"Speed Up Your Python Program With Concurrency"},
             \texttt{https://realpython.com/python-concurrency/}
-            \item David Beazley, \emph{"An Introduction to Python Concurrency"},
+            \item<1-> David Beazley, \emph{"An Introduction to Python Concurrency"},
                 presented at USENIX Technical ConferenceSan Diego, June, 2009.
                 Slides available at \texttt{https://speakerd.s3.amazonaws.com/presentations/
             3770713233254908b259542c4361e976/Concurrent.pdf}
@@ -283,14 +298,18 @@
     \begin{frame}
         \frametitle{GIL -- bibliography \& further reading}
         \begin{itemize}
-            \item Abhinav Ajitsaria, \emph{"What is the Python Global Interpreter Lock (GIL)?"}
+            \item<1-> Abhinav Ajitsaria, \emph{"What is the Python Global Interpreter Lock (GIL)?"}
             \texttt{https://realpython.com/python-gil/}
-            \item Python Wiki, \emph{"Global Interpreter Lock"},
+            \item<1-> Python Wiki, \emph{"Global Interpreter Lock"},
             \texttt{https://wiki.python.org/moin/GlobalInterpreterLock}
-            \footnotesize Discussion of problems with GIL and why it has not been eliminated
-            \item \emph{"Thread State and the Global Interpreter Lock"},
+%            \footnotesize Discussion of problems with GIL and why it has not been eliminated
+            \item<1-> \emph{"Thread State and the Global Interpreter Lock"},
             \texttt{https://docs.python.org/3/c-api/init.html
             \#thread-state-and-the-global-interpreter-lock}
+            \item<1-> Christoph Heer, \emph{"Is it me, or the GIL?"}, presented at
+            EuroPython 2019 in Basel, Switzerland, July, 2019.
+            Slides available at \texttt{https://ep2019.europython.eu/media/conference/
+            slides/Lj9n5pc-is-it-me-or-the-gil.pdf}
         \end{itemize}
 
     \end{frame}
