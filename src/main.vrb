@@ -1,7 +1,7 @@
 \frametitle{Global Interpreter Lock -- continued}
 
         Reference counting:
-        any reference to an object modifies it! (or at least its refcount)
+        any reference to an object modifies it (or at least its refcount)
         \begin{verbatim}
             > import sys
             > a = []

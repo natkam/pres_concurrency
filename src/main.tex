@@ -33,13 +33,13 @@
 %\pgfdeclareimage[height=0.5cm]{company-logo}{skygate_logo.jpg}
 %\logo{\pgfuseimage{company-logo}}
 
-%\AtBeginSubsection[]
-%{
-%\begin{frame}
-%    <beamer>{Outline}
-%    \tableofcontents[currentsection,currentsubsection]
-%\end{frame}
-%}
+\AtBeginSection[]
+{
+\begin{frame}
+    <beamer>{Outline}
+    \tableofcontents[currentsection]
+\end{frame}
+}
 
 \beamerdefaultoverlayspecification{<+->}
 
@@ -64,7 +64,7 @@
         \frametitle{What is concurrency, actually?}
 
         \begin{itemize}
-            \item Medieval Latin \emph{concurrentia} "a running together"
+            \item Medieval Latin \emph{concurrentia} ``a running together"
 
             (cf. English \emph{current}, \emph{concur})
             \item so: simultaneous occurrence\dots
@@ -115,12 +115,11 @@
         \frametitle{CPU-bound tasks -- continued}
 
         \begin{figure}
-            \includegraphics{../figures/CPUBound.png}
+            \includegraphics[width=\linewidth]{../figures/CPUBound.png}
             \caption{A diagram for a CPU-intensive program. Blue boxes show time when the program is doing work.}
         \end{figure}
 
     \end{frame}
-
 
     \begin{frame}
         \frametitle{I/O-bound tasks: threading, asynchronicity}
@@ -128,8 +127,19 @@
         \begin{itemize}
             \item Only one process (in Python)
             \item Not \emph{really} simultaneous: but can sometimes fake it quite well
-            \item Good for: sending requests (to DB, to APIs), waiting for user input, etc.
+            \item Good for: sending requests (to DB, to APIs), waiting for user input, file processing, etc.
         \end{itemize}
+
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{I/O-bound tasks -- continued}
+
+        \begin{figure}
+            \includegraphics[width=\linewidth]{../figures/IOBound.png}
+            \caption{A diagram for a I/O-intensive program. Blue boxes show time when the program is doing work,
+            the red boxes are time spent waiting for an I/O operation to complete (not to scale!).}
+        \end{figure}
 
     \end{frame}
 
@@ -140,11 +150,26 @@
         \begin{itemize}
             \item A \textbf{thread} of execution is the smallest sequence of programmed
             instructions that can be managed independently by a scheduler, which is typically a part of the operating system.
-            \item Pre-emptive multitasking: the system (scheduler) interrupts threads at arbitrary moments,
+            \item \textbf{Pre-emptive multitasking:} the system (scheduler) interrupts threads at arbitrary moments,
             switches to another thread, and later resumes the stopped tasks
-            \item No task cooperation is necessary
-            \item Caveats: Race conditions! $\Rightarrow random bugs. Thread-safety is important!
+            \item Caveats: race conditions $\Rightarrow$ random bugs. Thread scheduling is non-deterministic!
         \end{itemize}
+
+        \uncover<4->{\textbf{Q:} Why did the multithreaded chicken cross the road?
+
+        \textbf{A:} to To other side. get the
+        \flushright \emph{/Jason Whittington/}}
+
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{Threading -- continued}
+
+        \begin{figure}
+            \includegraphics[width=\linewidth]{../figures/race_conditions.png}
+            \caption{Race condition: when a program depends on the timing of the program's threads.
+            Here, two threads modify a global variable without locking or synchronisation.}
+        \end{figure}
 
     \end{frame}
 
@@ -153,10 +178,22 @@
         \frametitle{Asynchronicity}
 
         \begin{itemize}
-            \item Event loop -- definition
-            \item Cooperative multitasking: tasks have to be programmed to yield control when
+            \item \textbf{Event loop} -- waits for and dispatches events or messages in a program
+            \item \textbf{Cooperative multitasking:} tasks have to be programmed to yield control when
             they don't need system resources $\Rightarrow$ easier resources sharing
-            \item What if a task does not cooperate? -- blocking operations
+            \item What if a task does not cooperate? $\Rightarrow$ blocking operations
+            \item Sometimes more tricky than threading
+        \end{itemize}
+
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{Concurrent Programming}
+        \begin{itemize}
+            \item \textbf{Rust} -- focus on safe concurrency (memory safety)
+            \item \textbf{Go} -- goroutines, channels; parallel processing too
+            \item \textbf{Elixir} -- shared nothing concurrent programming (Actor model)
+            \item \dots
         \end{itemize}
 
     \end{frame}
@@ -171,15 +208,60 @@
 
         \begin{itemize}
             \item \texttt{multiprocessing} -- for CPU-bound tasks
-            \item \texttt{threading}  -- \dots?
-            \item \texttt{asyncio} -- from Python 3.4 on
+            \item \texttt{threading}  -- well\dots?
+            \item \texttt{asyncio} -- from Python 3.4 on; for I/O bound tasks
         \end{itemize}
+
+        Pycharm: concurrency diagrams (reveals locking issues, but omits GIL)
+
+    \end{frame}
+
+    \subsection{Example}
+
+    \begin{frame}
+        \frametitle{Example}
+
+
 
     \end{frame}
 
     \begin{frame}
-        \frametitle{Examples!}
+        \frametitle{multiprocessing}
 
+        \begin{figure}
+            \includegraphics[height=180px]{../figures/MProc.png}
+            \caption{A \texttt{multiprocessing} version of an I/O-intensive program.}
+        \end{figure}
+
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{threading}
+
+        \begin{figure}
+            \includegraphics[width=\linewidth]{../figures/Threading.png}
+            \caption{A \texttt{threading} version of an I/O-intensive program.}
+        \end{figure}
+
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{asyncio}
+
+        \begin{figure}
+            \includegraphics[width=\linewidth]{../figures/Asyncio.png}
+            \caption{An \texttt{asyncio} version of an I/O-intensive program. All the I/O requests are
+            performed by the same thread.}
+        \end{figure}
+
+    \end{frame}
+
+
+
+    \begin{frame}
+        \frametitle{Examples!}
+        \centering
+        Let's see some code.
 
     \end{frame}
 
@@ -192,8 +274,8 @@
         \begin{itemize}
             \item The mechanism used by the CPython interpreter to assure that only one thread executes Python bytecode at a time
             \item But why?!
-            \item Makes the object model implicitly safe against concurrent access
-            \item Reference counting -- instead of garbage collection; (more about it in the next slide)
+            \item Design choice: Makes the object model implicitly safe against concurrent access
+            \item Reference counting -- instead of garbage collection
         \end{itemize}
 
     \end{frame}
@@ -221,29 +303,33 @@
             \item Otherwise: memory leaks (never released) or incorrectly released memory,
             while a reference to the object still exist
             \item \textbf{A solution?} Add locks to all the objects that are shared between threads
-            \item \emph{Consequences:} decreased performance, and deadlocks!
+            \item \emph{Consequences:} decreased performance, deadlocks, very difficult to develop and maintain
             \item \textbf{A better solution?} A single lock: execution of any Python code
             requires acquiring the lock on the interpreter
-            \item \emph{Consequences:} easier, thread-safe, but any CPU-bound program becomes, effectively, single-threaded.
-            \item Back then, when Python was a young language, it made it easy to add C extensions
-            (didn't have to be thread-safe) -- this helped make Python more popular
+            \item \emph{Consequences:} easier, thread-safe, but any CPU-bound program becomes, effectively, single-threaded
         \end{itemize}
 
     \end{frame}
 
     \begin{frame}
         \frametitle{Global Interpreter Lock -- continued}
+        Is it really so bad?
 
+        \begin{itemize}
+            \item The GIL is always released when doing I/O.
+            \item Threads can still be run in separate processes, sometimes.
+            \item NumPy, TensorFlow, PyTorch -- written to release the GIL when possible (or not use Python interpreter)
+            \item ``Premature optimization is the root of all evil." -- Donald Knuth
 
-        The GIL is always released when doing I/O.
+        \end{itemize}
 
-        \begin{quotation}
-            [O]nly the thread that has acquired the GIL may operate on Python objects or
-            call Python/C API functions. In order to emulate concurrency of execution,
-            the interpreter regularly tries to switch threads (\dots).
-            The lock is also released around potentially blocking I/O operations like
-            reading or writing a file, so that other Python threads can run in the meantime.
-        \end{quotation}
+%        \begin{quotation}
+%            [O]nly the thread that has acquired the GIL may operate on Python objects or
+%            call Python/C API functions. In order to emulate concurrency of execution,
+%            the interpreter regularly tries to switch threads (\dots).
+%            The lock is also released around potentially blocking I/O operations like
+%            reading or writing a file, so that other Python threads can run in the meantime.
+%        \end{quotation}
 
     \end{frame}
 
@@ -258,8 +344,6 @@
             \item Python $\rightarrow$ a faster language\dots?
         \end{itemize}
 
-        Pycharm: concurrency diagrams (reveals locking issues, but omits GIL)
-
     \end{frame}
 
     %\begin{frame}
@@ -276,19 +360,22 @@
     %    \frametitle{}
     %
     %\end{frame}
-    %
-    %\begin{frame}
-    %    \frametitle{}
-    %
-    %\end{frame}
+
+    \section{References}
+
+    \begin{frame}
+        \frametitle{Thank you!}
+        \centering
+        That's it. Questions?
+    \end{frame}
 
     \begin{frame}
         \frametitle{Concurrency in Python -- bibliography \& further reading}
 
         \begin{itemize}
-            \item<1-> Jim Anderson, \emph{"Speed Up Your Python Program With Concurrency"},
+            \item<1-> Jim Anderson, \emph{``Speed Up Your Python Program With Concurrency"},
             \texttt{https://realpython.com/python-concurrency/}
-            \item<1-> David Beazley, \emph{"An Introduction to Python Concurrency"},
+            \item<1-> David Beazley, \emph{``An Introduction to Python Concurrency"},
                 presented at USENIX Technical ConferenceSan Diego, June, 2009.
                 Slides available at \texttt{https://speakerd.s3.amazonaws.com/presentations/
             3770713233254908b259542c4361e976/Concurrent.pdf}
@@ -298,15 +385,15 @@
     \begin{frame}
         \frametitle{GIL -- bibliography \& further reading}
         \begin{itemize}
-            \item<1-> Abhinav Ajitsaria, \emph{"What is the Python Global Interpreter Lock (GIL)?"}
+            \item<1-> Abhinav Ajitsaria, \emph{``What is the Python Global Interpreter Lock (GIL)?"}
             \texttt{https://realpython.com/python-gil/}
-            \item<1-> Python Wiki, \emph{"Global Interpreter Lock"},
+            \item<1-> Python Wiki, \emph{``Global Interpreter Lock"},
             \texttt{https://wiki.python.org/moin/GlobalInterpreterLock}
 %            \footnotesize Discussion of problems with GIL and why it has not been eliminated
-            \item<1-> \emph{"Thread State and the Global Interpreter Lock"},
+            \item<1-> \emph{``Thread State and the Global Interpreter Lock"},
             \texttt{https://docs.python.org/3/c-api/init.html
             \#thread-state-and-the-global-interpreter-lock}
-            \item<1-> Christoph Heer, \emph{"Is it me, or the GIL?"}, presented at
+            \item<1-> Christoph Heer, \emph{``Is it me, or the GIL?"}, presented at
             EuroPython 2019 in Basel, Switzerland, July, 2019.
             Slides available at \texttt{https://ep2019.europython.eu/media/conference/
             slides/Lj9n5pc-is-it-me-or-the-gil.pdf}
@@ -319,7 +406,7 @@
 %    \begin{thebibliography}
 %
 %    \bibitem{RealPython}
-%    \bibitem{DaBeaz} David Beazley, "An Introduction to Python Concurrency",
+%    \bibitem{DaBeaz} David Beazley, ``An Introduction to Python Concurrency",
 %    presented at USENIX Technical ConferenceSan Diego, June, 2009.
 %    Slides available at https://speakerd.s3.amazonaws.com/presentations/3770713233254908b259542c4361e976/Concurrent.pdf
 %    \end{thebibliography}
