@@ -155,7 +155,7 @@
             \item Caveats: race conditions $\Rightarrow$ random bugs. Thread scheduling is non-deterministic!
         \end{itemize}
 
-        \uncover<4->{\textbf{Q:} Why did the multithreaded chicken cross the road?
+        \uncover<+->{\textbf{Q:} Why did the multithreaded chicken cross the road?
 
         \textbf{A:} to To other side. get the
         \flushright \emph{/Jason Whittington/}}
@@ -212,7 +212,7 @@
             \item \texttt{asyncio} -- from Python 3.4 on; for I/O bound tasks
         \end{itemize}
 
-        Pycharm: concurrency diagrams (reveals locking issues, but omits GIL)
+        \uncover<+->{a nice Pycharm tool: concurrency diagrams (reveals locking issues, but omits GIL)}
 
     \end{frame}
 
@@ -221,6 +221,9 @@
     \begin{frame}
         \frametitle{Example}
 
+        Let's imagine we need to send multiple web requests.
+
+        Waiting for the webpages' responses is an I/O-bound operation.
 
 
     \end{frame}
@@ -229,7 +232,7 @@
         \frametitle{multiprocessing}
 
         \begin{figure}
-            \includegraphics[height=180px]{../figures/MProc.png}
+            \includegraphics[height=175px]{../figures/MProc.png}
             \caption{A \texttt{multiprocessing} version of an I/O-intensive program.}
         \end{figure}
 
@@ -256,8 +259,6 @@
 
     \end{frame}
 
-
-
     \begin{frame}
         \frametitle{Examples!}
         \centering
@@ -266,6 +267,7 @@
     \end{frame}
 
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{GIL}
 
     \begin{frame}
@@ -346,21 +348,8 @@
 
     \end{frame}
 
-    %\begin{frame}
-    %    \frametitle{}
-    %
-    %\end{frame}
-    %
-    %\begin{frame}
-    %    \frametitle{}
-    %
-    %\end{frame}
-    %
-    %\begin{frame}
-    %    \frametitle{}
-    %
-    %\end{frame}
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{References}
 
     \begin{frame}
@@ -400,16 +389,5 @@
         \end{itemize}
 
     \end{frame}
-
-%    \bibliography{main}
-%    \bibliographystyle{plain}
-%    \begin{thebibliography}
-%
-%    \bibitem{RealPython}
-%    \bibitem{DaBeaz} David Beazley, ``An Introduction to Python Concurrency",
-%    presented at USENIX Technical ConferenceSan Diego, June, 2009.
-%    Slides available at https://speakerd.s3.amazonaws.com/presentations/3770713233254908b259542c4361e976/Concurrent.pdf
-%    \end{thebibliography}
-
 
 \end{document}
